@@ -5,20 +5,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.wujingjingguanxueyuan.yidaogan.R;
+import com.wujingjingguanxueyuan.yidaogan.activity.PostDetailsActivity;
 import com.wujingjingguanxueyuan.yidaogan.activity.PublishPostActivity;
-import com.wujingjingguanxueyuan.yidaogan.adapter.CommentAdapter;
 import com.wujingjingguanxueyuan.yidaogan.adapter.CommonAdapter;
 import com.wujingjingguanxueyuan.yidaogan.adapter.CommonViewHolder;
 import com.wujingjingguanxueyuan.yidaogan.adapter.PostAdapter;
@@ -26,8 +23,6 @@ import com.wujingjingguanxueyuan.yidaogan.base.BaseFragment;
 import com.wujingjingguanxueyuan.yidaogan.event.RefreshPostEvent;
 import com.wujingjingguanxueyuan.yidaogan.mvp.bean.Post;
 import com.wujingjingguanxueyuan.yidaogan.mvp.presenter.ShowPostPresenter;
-import com.wujingjingguanxueyuan.yidaogan.mvp.view.ShowPostsView;
-import com.wujingjingguanxueyuan.yidaogan.widget.SwipeRecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -36,11 +31,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
@@ -97,7 +89,7 @@ public class DiscoverFragment extends BaseFragment{// implements ShowPostsView {
         adapter = new CommonAdapter<Post>(R.layout.item_post,mPosts){
 
             @Override
-            public void convert(CommonViewHolder holder, Post item) {
+            public void convert(CommonViewHolder holder, final Post item) {
                 holder.setText(R.id.tv_user_name,item.getAuthor().getUsername());
                 holder.setText(R.id.tv_post_content,item.getContent());
                 holder.setText(R.id.tv_post_time,item.getCreatedAt());
@@ -106,6 +98,12 @@ public class DiscoverFragment extends BaseFragment{// implements ShowPostsView {
                     Glide.with(mContext).load(R.mipmap.icon_message_press).into(mIvUserAvatar);
                 else
                     Glide.with(mContext).load(item.getAuthor().getAvatar().getFileUrl()).into(mIvUserAvatar);
+                holder.itemView.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view) {
+                        mContext.startActivity(new Intent(mContext, PostDetailsActivity.class).putExtra("post", item));
+                    }
+                });
             }
         };
         mSwipeRecyclePost.setAdapter(adapter);

@@ -3,7 +3,6 @@ package com.wujingjingguanxueyuan.yidaogan.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -104,7 +103,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
         food.setOnClickListener(this);
         want = (TextView) view.findViewById(R.id.want);
       //  want.setText("在" + SaveKeyValues.getStringValues("plan_stop_date","2016年6月16日")+"体重达到【"+SaveKeyValues.getIntValues("weight",50)+"】公斤");
-        want.setText("在" + currentUser.plan_stop_date+"之前体重达到【"+currentUser.getWeight_str()+"】公斤");
+        want.setText("在" + currentUser.getPlan_stop_date()+"之前体重达到【"+currentUser.getWeight_str()+"】公斤");
         about = (TextView) view.findViewById(R.id.about_btn);
         about.setOnClickListener(this);
         sport_message = (TextView) view.findViewById(R.id.sport_btn);

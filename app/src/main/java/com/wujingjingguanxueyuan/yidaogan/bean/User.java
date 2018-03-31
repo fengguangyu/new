@@ -31,7 +31,7 @@ public class User extends BmobUser {
     private String length = 70+"";
     private String length_str;
     private String count;
-    public Integer step_plan = 6000; //计划步数
+    public Integer step_plan; //计划步数
     public String plan_start_date;
     public Integer plan_start_year;
     public Integer plan_start_month;
@@ -174,4 +174,36 @@ public class User extends BmobUser {
     public void setCount(String count) {
         this.count = count;
     }
+
+    public Integer getStep_plan() {
+        return step_plan;
+    }
+
+    public void setStep_plan(Integer step_plan){
+        this.step_plan = step_plan;
+    }
+
+    public String getPlan_stop_date(){
+        return plan_stop_date;
+    }
+
+    public void setPlan_stop_date(String plan_stop_date){
+        this.plan_stop_date = plan_stop_date;
+    }
+
+    public String getPlan_start_date(){
+        return plan_start_date;
+    }
+    public void setPlan_start_date(String plan_start_date){
+        this.plan_start_date = plan_start_date;
+    }
+
+    public Integer getPlan_want_weight_values() {
+        return plan_want_weight_values;
+    }
+
+    public void s(Integer step_plan){
+        this.step_plan = step_plan;
+    }
+
 }

@@ -56,6 +56,8 @@ public class PlanningActivity extends BaseActivity implements View.OnFocusChange
     private int stop_date;//结束日
     private int plan_want_weight;//目标体重
     private User currentUser;
+    private int height;
+    private int weight;
     /**
      * 设置标题
      */
@@ -88,11 +90,12 @@ public class PlanningActivity extends BaseActivity implements View.OnFocusChange
         //设置默认加载发现界面
         SaveKeyValues.putIntValues("launch_which_fragment", Constant.MAKE_PLAN);
         getNowDate();
-        int height = 0;//SaveKeyValues.getIntValues("height",0);
-        int weight =0;
+        currentUser = BmobUser.getCurrentUser(User.class);
+//        int height = 0;//SaveKeyValues.getIntValues("height",0);
+//        int weight =0;
         if(currentUser !=null){
-            height = toInt(currentUser.getWeight());//SaveKeyValues.getIntValues("height",0);
-            weight =toInt(currentUser.getHeight());
+            height = toInt(currentUser.getHeight());//SaveKeyValues.getIntValues("height",0);
+            weight =toInt(currentUser.getWeight());
         }
         Log.e("身高体重值","身高："+height + "\t\t体重："+weight);
         getBMIValuesHelper = new GetBMIValuesHelper();
