@@ -202,8 +202,8 @@ public class User extends BmobUser {
         return plan_want_weight_values;
     }
 
-    public void s(Integer step_plan){
-        this.step_plan = step_plan;
+    public void setPlan_want_weight_values(Integer plan_want_weight_values){
+        this.plan_want_weight_values = plan_want_weight_values;
     }
 
 }
