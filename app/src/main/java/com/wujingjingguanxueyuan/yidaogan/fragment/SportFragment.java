@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,19 +25,24 @@ import com.wujingjingguanxueyuan.yidaogan.entity.PMInfo;
 import com.wujingjingguanxueyuan.yidaogan.entity.TodayInfo;
 import com.wujingjingguanxueyuan.yidaogan.service.StepCounterService;
 import com.wujingjingguanxueyuan.yidaogan.utils.Constant;
+import com.wujingjingguanxueyuan.yidaogan.utils.DateUtils;
 import com.wujingjingguanxueyuan.yidaogan.utils.HttpUtils;
 import com.wujingjingguanxueyuan.yidaogan.utils.SaveKeyValues;
 import com.wujingjingguanxueyuan.yidaogan.utils.StepDetector;
 import com.wujingjingguanxueyuan.yidaogan.utils.TimeUtil;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import mrkj.library.wheelview.circlebar.CircleBar;
 import rx.Subscriber;
+
+import static com.wujingjingguanxueyuan.yidaogan.R.string.km;
 
 /**
  * 运动
@@ -75,6 +81,7 @@ public class SportFragment extends Fragment {//此处直接继承Fragment即可
 
     private SportEntry sportentry = new SportEntry();
     private User currentUser;
+    private List<SportEntry> sportEntries = new ArrayList<>();
 
     //传值
     private Handler handler = new Handler(new Handler.Callback() {
@@ -103,11 +110,12 @@ public class SportFragment extends Fragment {//此处直接继承Fragment即可
                     }
                     sportentry.sport_steps = steps_values;
 //                    Log.e("执行了", ":" + steps_values);
+//                    Log.e("zhixingle",":"+ sportentry.sport_steps);
                     //计算里程
                     distance_values = steps_values *
                             custom_step_length * 0.01 *0.001;//km
 //                    Log.e("里程", ":" + distance_values+"km");
-                    show_mileage.setText(formatDouble(distance_values) + context.getString(R.string.km));
+                    show_mileage.setText(formatDouble(distance_values) + context.getString(km));
                     //存值
                     //SaveKeyValues.putStringValues("sport_distance",formatDouble(distance_values));
                     sportentry.sport_distance = formatDouble(distance_values);
@@ -115,9 +123,19 @@ public class SportFragment extends Fragment {//此处直接继承Fragment即可
                     heat_values = custom_weight * distance_values * 1.036;
                     //展示信息
                     show_heat.setText(formatDouble(heat_values) + context.getString(R.string.cal));
+                    //日期
+                    Map<String,Object> map = DateUtils.getDate();
+                    int year = (int) map.get("year");
+                    int month = (int) map.get("month");
+                    int day = (int) map.get("day");
+                    String date = (String) map.get("date");
                     //存值
                     //SaveKeyValues.putStringValues("sport_heat",formatDouble(heat_values));
                     sportentry.sport_heat = formatDouble(heat_values);
+                    sportentry.date = date;
+                    sportentry.year = year;
+                    sportentry.month = month;
+                    sportentry.day = day;
                     sportentry.user = BmobUser.getCurrentUser(User.class);
                     sportentry.update();
                     break;
@@ -135,12 +153,11 @@ public class SportFragment extends Fragment {//此处直接继承Fragment即可
         sportEntry.findObjectsObservable(SportEntry.class).subscribe(new Subscriber<List<SportEntry>>() {
             @Override
             public void onCompleted() {
-
             }
 
             @Override
             public void onError(Throwable throwable) {
-
+                Log.e("5555eRROR",throwable.getMessage());
             }
 
             @Override
@@ -186,11 +203,28 @@ public class SportFragment extends Fragment {//此处直接继承Fragment即可
         initView();//初始化控件
         initValues();//初始化数据
         setNature();//设置功能
+        if(sportEntries != null && sportEntries.size()>0){
+            for(int i=0;i<sportEntries.size();i++){
+                Date sportData = TimeUtil.stringToDate(sportEntries.get(i).getCreatedAt(),TimeUtil.FORMAT_DATE_TIME_SECOND);
+                if(com.wujingjingguanxueyuan.yidaogan.utils.DateUtils.isSameDay(sportData,new Date())){
+                    sportentry = sportEntries.get(i);
+                }
+            }
+            if(sportentry ==null){
+                sportentry = new SportEntry();
+                sportentry.save();
+            }
+        }else {
+            sportentry = new SportEntry();
+            sportentry.save();
+
+        }
         //提示
         if (StepDetector.CURRENT_SETP > custom_steps){
             Toast.makeText(getContext(),"您已达到目标步数,请适量运动！"
                     , Toast.LENGTH_LONG).show();
         }
+
         //提示弹窗
         if (SaveKeyValues.getIntValues("do_hint",0) == 1
                 && (System.currentTimeMillis() > (SaveKeyValues.
@@ -209,6 +243,7 @@ public class SportFragment extends Fragment {//此处直接继承Fragment即可
             alertDialog.show();//显示弹窗
         }
         return view;
+
     }
 
     /**

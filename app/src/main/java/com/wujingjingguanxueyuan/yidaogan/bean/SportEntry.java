@@ -7,6 +7,10 @@ import cn.bmob.v3.BmobObject;
  */
 
 public class SportEntry extends BmobObject{
+    public String date;
+    public Integer year;
+    public Integer month;
+    public Integer day;
     public Integer sport_steps = 0; //实际步数
     public String sport_distance;
     public String sport_heat;
