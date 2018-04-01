@@ -96,4 +96,5 @@
     <string name="forgot_your_password">忘记密码？</string>
     <string name="go">登录</string>
     <string name="repeat_password">重复密码</string>
+    <string name="where">您的位置</string>
 </resources>
