@@ -237,8 +237,8 @@ public class MinePlanActivity extends BaseActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
             final Plan plan = plan_List.get(position);
-         //   holder.date.setText(plan.start_year+plan.start_month+plan.start_day);//时间段
-            holder.hint_time.setText("提示时间："+plan.hint_str);//时间点
+            holder.date.setText("开始日期："+plan.start_year+"年"+plan.start_month+"月"+plan.start_day+"日"+"-"+"结束时间"+plan.stop_year+"年"+plan.stop_month+"月"+plan.stop_day+"日");//时间段
+            holder.hint_time.setText("设置时间："+plan.hint_str);//时间点
             holder.name.setText(DemoApplication.shuoming[plan.sport_type]);//类型
             holder.count.setText(TrainingFragment.cishu);
             holder.change.setText("更改计划");

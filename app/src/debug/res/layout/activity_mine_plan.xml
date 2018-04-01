@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="mrkj.healthylife.activity.MinePlanActivity">
+    tools:context=".activity.MinePlanActivity">
     <include layout="@layout/title_layout"/>
     <ListView
         android:id="@+id/plan_list"

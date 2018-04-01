@@ -93,10 +93,10 @@ public class PlanningActivity extends BaseActivity implements View.OnFocusChange
         currentUser = BmobUser.getCurrentUser(User.class);
 //        int height = 0;//SaveKeyValues.getIntValues("height",0);
 //        int weight =0;
-        if(currentUser !=null){
+
             height = toInt(currentUser.getHeight());//SaveKeyValues.getIntValues("height",0);
             weight =toInt(currentUser.getWeight());
-        }
+
         Log.e("身高体重值","身高："+height + "\t\t体重："+weight);
         getBMIValuesHelper = new GetBMIValuesHelper();
         Map<String,Double> map = getBMIValuesHelper.getNormalWeightRange(height);
