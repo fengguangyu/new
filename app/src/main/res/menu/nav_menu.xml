@@ -6,9 +6,9 @@
             android:icon="@drawable/nav_call"
             android:title="Call" />
         <item
-            android:id="@+id/nav_friends"
-            android:icon="@drawable/nav_friends"
-            android:title="Friends" />
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/nav_logout"
+            android:title="Logout" />
         <item
             android:id="@+id/nav_location"
             android:icon="@drawable/nav_location"

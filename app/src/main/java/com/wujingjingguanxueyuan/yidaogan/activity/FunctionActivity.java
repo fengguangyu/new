@@ -1,6 +1,7 @@
 package com.wujingjingguanxueyuan.yidaogan.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
 import com.wujingjingguanxueyuan.yidaogan.R;
 import com.wujingjingguanxueyuan.yidaogan.base.BaseActivity;
 import com.wujingjingguanxueyuan.yidaogan.bean.User;
@@ -23,6 +25,8 @@ import com.wujingjingguanxueyuan.yidaogan.fragment.DiscoverFragment;
 import com.wujingjingguanxueyuan.yidaogan.fragment.MineFragment;
 import com.wujingjingguanxueyuan.yidaogan.fragment.SportFragment;
 import com.wujingjingguanxueyuan.yidaogan.fragment.TrainingFragment;
+import com.wujingjingguanxueyuan.yidaogan.mvp.bean.Installation;
+import com.wujingjingguanxueyuan.yidaogan.utils.BmobUtils;
 import com.wujingjingguanxueyuan.yidaogan.utils.Constant;
 import com.wujingjingguanxueyuan.yidaogan.utils.SaveKeyValues;
 import com.wujingjingguanxueyuan.yidaogan.view.ViewPagerIndicator;
@@ -31,7 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import cn.bmob.newim.BmobIM;
+import cn.bmob.v3.BmobInstallationManager;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import rx.functions.Action1;
 
 
 /**
@@ -168,6 +176,13 @@ public class FunctionActivity extends BaseActivity{
                     case R.id.nav_location:
                         startActivity(new Intent(FunctionActivity.this, WhereActivity.class));
                         break;
+                    case R.id.nav_logout:
+                        modifyInstallationUser();
+                        break;
+                    case R.id.nav_call:
+                        Intent intent = new Intent(Intent.ACTION_DIAL);
+                        intent.setData(Uri.parse("tel:"));
+                        startActivity(intent);
                 }
                 return true;
             }
@@ -231,5 +246,55 @@ public class FunctionActivity extends BaseActivity{
             default:
         }
         return true;
+    }
+    /**
+     * 修改设备表的用户信息：先查询设备表中的数据，再修改数据中用户信息
+     */
+    private void modifyInstallationUser() {
+        BmobQuery<Installation> bmobQuery = new BmobQuery<>();
+        final String id = BmobInstallationManager.getInstallationId();
+        bmobQuery.addWhereEqualTo("installationId", id);
+        bmobQuery.findObjectsObservable(Installation.class)
+                .subscribe(new Action1<List<Installation>>() {
+                    @Override
+                    public void call(List<Installation> installations) {
+
+                        if (installations.size() > 0) {
+                            Installation installation = installations.get(0);
+                            User user = new User();
+                            installation.setUser(user);
+                            user.setObjectId("");
+                            installation.updateObservable()
+                                    .subscribe(new Action1<Void>() {
+                                        @Override
+                                        public void call(Void aVoid) {
+                                            BmobUtils.toast(FunctionActivity.this,"更新设备用户信息成功！");
+                                            /**
+                                             * TODO 更新成功之后再退出
+                                             */
+                                            //TODO 连接：3.2、退出登录需要断开与IM服务器的连接
+                                            BmobIM.getInstance().disConnect();
+                                            BmobUser.logOut();
+                                            startActivity(new Intent(FunctionActivity.this, LogActivity.class));
+                                            FunctionActivity.this.finish();
+                                        }
+                                    }, new Action1<Throwable>() {
+                                        @Override
+                                        public void call(Throwable throwable) {
+                                            Logger.e("更新设备用户信息失败：" + throwable.getMessage());
+                                        }
+                                    });
+
+                        } else {
+                            Logger.e("后台不存在此设备Id的数据，请确认此设备Id是否正确！\n" + id);
+                        }
+
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Logger.e("查询设备数据失败：" + throwable.getMessage());
+                    }
+                });
     }
 }
