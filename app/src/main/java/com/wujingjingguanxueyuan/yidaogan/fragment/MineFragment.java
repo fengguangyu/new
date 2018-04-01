@@ -24,7 +24,7 @@ import com.wujingjingguanxueyuan.yidaogan.activity.FoodHotListActivity;
 import com.wujingjingguanxueyuan.yidaogan.activity.MinePlanActivity;
 import com.wujingjingguanxueyuan.yidaogan.activity.SportMessageActivity;
 import com.wujingjingguanxueyuan.yidaogan.base.BaseFragment;
-import com.wujingjingguanxueyuan.yidaogan.bean.Steps;
+import com.wujingjingguanxueyuan.yidaogan.bean.SportEntry;
 import com.wujingjingguanxueyuan.yidaogan.bean.User;
 import com.wujingjingguanxueyuan.yidaogan.db.DatasDao;
 import com.wujingjingguanxueyuan.yidaogan.utils.SaveKeyValues;
@@ -71,7 +71,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     private TextView about;//关于我们
     private TextView sport_message;//运动信息
     private TextView plan_btn;//计划
-    private List<Steps> stepsList = new ArrayList<>();
+    private List<SportEntry> sportEntries = new ArrayList<>();
     private User currentUser;
     @Override
     public void onAttach(Context context) {
@@ -176,58 +176,18 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
         //设置图表
         //获取保存的数据
        // Cursor cursor = datasDao.selectAll("step");
-        BmobQuery<Steps> stepsBmobQuery = new BmobQuery<>();
+        BmobQuery<SportEntry> stepsBmobQuery = new BmobQuery<>();
         stepsBmobQuery.addWhereEqualTo("user", BmobUser.getCurrentUser());
-        stepsBmobQuery.findObjects(new FindListener<Steps>() {
+        stepsBmobQuery.findObjects(new FindListener<SportEntry>() {
             @Override
-            public void done(List<Steps> list, BmobException e) {
+            public void done(List<SportEntry> list, BmobException e) {
                 if(e==null){
-                    stepsList = list;
+                    sportEntries = list;
                     int counts = list.size();
                     getDataValues(counts);
                 }
             }
         });
-
-    }
-
-    private void getDateTest() {
-
-        List<AxisValue> axisValues = new ArrayList<>();
-        for (int i = 0; i < points.length; i++) {
-            AxisValue axisValue = new AxisValue(i);
-            axisValue.setLabel((i + 8) + "");
-            axisValues.add(axisValue);
-        }
-        Axis axisx = new Axis();
-        Axis axisy = new Axis();
-        axisx.setTextColor(Color.BLACK)
-                .setName("日期")
-                .setValues(axisValues);
-        axisy.setTextColor(Color.BLACK)
-                .setName("步数")
-                .setHasLines(true)
-                .setMaxLabelChars(5);
-        List<PointValue> values = new ArrayList<>();
-        for (int i = 0; i < points.length; i++) {
-            points[i] = (int) (Math.random() * 1000 + 5000);
-            values.add(new PointValue(i, points[i]));
-            Log.e("运行" + "【" + i + "】", points[i] + "");
-        }
-        List<Line> lines = new ArrayList<>();
-        Line line = new Line(values)
-                .setColor(Color.parseColor("#4592F3"))
-                .setCubic(false)
-                .setHasPoints(false);
-        line.setHasLines(true);
-        line.setHasLabels(true);
-        line.setHasPoints(true);
-        lines.add(line);
-        data = new LineChartData();
-        data.setLines(lines);
-        data.setAxisYLeft(axisy);
-        data.setAxisXBottom(axisx);
-        lineChartView.setLineChartData(data);
 
     }
 
@@ -269,7 +229,6 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
             for (int i = 0; i < 6; i++) {
                 list.add(new PointValue(i, 0));
             }
-            list.add(new PointValue(6, SaveKeyValues.getIntValues("sport_steps", 0)));
             //设置折线图的集合
             List<Line> lines = new ArrayList<>();
             //添加折线并设置折线
@@ -312,20 +271,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
                     list.add(new PointValue(i, 0));
                 }
             }
-            //获取游标用来检索数据
-            //Cursor cursor = datasDao.selectAll("step");
-           // int i = count;
-           /* while (cursor.moveToNext()){
-                int a = cursor.getInt(cursor.getColumnIndex("steps"));
-                list.add(new PointValue(6 - (i--), a));
-            }*/
            for(int i=0;i<count;i++){
-               list.add(new PointValue(i,stepsList.get(i).getStep()));
+               list.add(new PointValue(i,sportEntries.get(i).getSport_steps()));
            }
-
-           // cursor.close();
-            //加入当天数据
-            list.add(new PointValue(6, SaveKeyValues.getIntValues("sport_steps", 0)));
             List<Line> lines = new ArrayList<>();
             Line line = new Line(list)
                     .setColor(Color.parseColor("#4592F3"))
@@ -361,16 +309,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
             list = new ArrayList<>();
             int length = count - 6 + 1;//开始去元素的ID
             for (int i = length; i <= count ; i ++){
-               /* int b = 0;
-                Cursor cursor = datasDao.selectValue2("step",null,"_id=?",new String[]{String.valueOf(i)},null,null,null);
-                while (cursor.moveToNext()){
-                    int a = cursor.getInt(cursor.getColumnIndex("steps"));
-                    list.add(new PointValue(b, a));
-                }
-                cursor.close();
-                b++;*/
                 int b = 0;
-                list.add(new PointValue(b, stepsList.get(i).getStep()));
+                list.add(new PointValue(b, sportEntries.get(i).getSport_steps()));
                 b++;
             }
         }

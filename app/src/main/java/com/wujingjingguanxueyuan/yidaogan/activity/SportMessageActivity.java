@@ -1,6 +1,5 @@
 package com.wujingjingguanxueyuan.yidaogan.activity;
 
-import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,8 +12,7 @@ import android.widget.Toast;
 
 import com.wujingjingguanxueyuan.yidaogan.R;
 import com.wujingjingguanxueyuan.yidaogan.base.BaseActivity;
-import com.wujingjingguanxueyuan.yidaogan.bean.Steps;
-import com.wujingjingguanxueyuan.yidaogan.db.DatasDao;
+import com.wujingjingguanxueyuan.yidaogan.bean.SportEntry;
 import com.wujingjingguanxueyuan.yidaogan.utils.SaveKeyValues;
 
 import java.text.DecimalFormat;
@@ -46,7 +44,7 @@ public class SportMessageActivity extends BaseActivity implements View.OnClickLi
     private ListView dataList;
     private int counts;
     private List<Map<String , Object>> list;
-    private List<Steps> stepsList = new ArrayList<>();
+    private List<SportEntry> sportEntries = new ArrayList<>();
     @Override
     protected void setActivityTitle() {
         initTitle();
@@ -67,33 +65,33 @@ public class SportMessageActivity extends BaseActivity implements View.OnClickLi
         Log.e("plans",plans+"");
       //  datasDao = new DatasDao(this);
       //  cursor = datasDao.selectAll("step");
-        BmobQuery<Steps> stepsBmobQuery = new BmobQuery<>();
+        BmobQuery<SportEntry> stepsBmobQuery = new BmobQuery<>();
         stepsBmobQuery.addWhereEqualTo("user", BmobUser.getCurrentUser());
-        stepsBmobQuery.findObjects(new FindListener<Steps>() {
+        stepsBmobQuery.findObjects(new FindListener<SportEntry>() {
             @Override
-            public void done(List<Steps> list, BmobException e) {
+            public void done(List<SportEntry> list, BmobException e) {
                 if(e==null){
-                    stepsList = list;
+                    sportEntries = list;
                 }
             }
         });
-        day_values = 1 + stepsList.size();
+        day_values = 1 + sportEntries.size();
         double hot_values = 0;
         int step = 0;
-        counts = stepsList.size();
+        counts = sportEntries.size();
         list =new ArrayList<>();
         if ( counts> 0){
             for(int i =0;i<counts;i++){
-                String hot = stepsList.get(i).getHeat_Str();
-                int steps = stepsList.get(i).getStep();
+                String hot = sportEntries.get(i).getSport_heat();
+                int steps = sportEntries.get(i).getSport_steps();
                 double hots = Double.parseDouble(hot);
                 hot_values += hots;
                 step += steps;
                 Map<String , Object> map = new HashMap<>();
-                map.put("date" , stepsList.get(i).getDate());
-                map.put("step" , stepsList.get(i).getStep());
-                map.put("length" , stepsList.get(i).getDistance_Str());
-                map.put("hot" , stepsList.get(i).getHeat_Str());
+                map.put("date" , sportEntries.get(i).getDate());
+                map.put("step" , sportEntries.get(i).getSport_steps());
+                map.put("length" , sportEntries.get(i).getSport_distance());
+                map.put("hot" , sportEntries.get(i).getSport_heat());
               ///  Log.e("ss", date_data + "==" + step_data + "=="+length_data+"=="+hot_data+ "==");
                 list.add(map);
 
